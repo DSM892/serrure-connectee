@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Modifier un utilisateur | Serrure connectée</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="edit-page">
+    <main class="edit-card" aria-labelledby="edit-title">
+        <header class="edit-header">
+            <p class="eyebrow">Gestion des accès</p>
+            <h1 id="edit-title">Modifier l'utilisateur</h1>
+            <p class="edit-user-name">Compte : <strong>{{ user[1] }}</strong></p>
+        </header>
+
+        <section class="edit-content">
+            {% if error %}
+                <p class="login-error" role="alert">{{ error }}</p>
+            {% endif %}
+
+            <form class="edit-form" action="{{ url_for('edit_user', user_id=user[0]) }}" method="post">
+                <label>
+                    <span>Identifiant</span>
+                    <input type="text" name="name" value="{{ user[1] }}" required>
+                </label>
+                <label>
+                    <span>Mot de passe</span>
+                    <input type="password" name="password" required>
+                </label>
+                <label>
+                    <span>Rôle</span>
+                    <select name="role" required>
+                        <option value="client" {% if user[3] == 'client' %}selected{% endif %}>Client</option>
+                        <option value="admin" {% if user[3] == 'admin' %}selected{% endif %}>Admin</option>
+                    </select>
+                </label>
+                <div class="edit-actions">
+                    <a href="{{ url_for('home') }}">Annuler</a>
+                    <button type="submit">Enregistrer</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

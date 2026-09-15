@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion | Serrure connectée</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page">
+    <main class="login-card" aria-label="Formulaire de connexion">
+        <section class="login-form-panel">
+            {% if error %}
+                <p class="login-error" role="alert">{{ error }}</p>
+            {% endif %}
+
+            <form id="login-form" action="{{ url_for('login') }}" method="post">
+                <label class="input-row" for="name">
+                    <span class="visually-hidden">Identifiant</span>
+                    <input type="text" id="name" name="name" placeholder="Identifiant" autocomplete="username" required>
+                </label>
+
+                <label class="input-row" for="password">
+                    <span class="visually-hidden">Mot de passe</span>
+                    <input type="password" id="password" name="password" placeholder="Mot de passe" autocomplete="current-password" required>
+                </label>
+
+                <button type="submit" class="mobile-submit">Se connecter</button>
+            </form>
+        </section>
+
+        <button type="submit" form="login-form" class="login-submit" aria-label="Se connecter">
+            <span>Connexion</span>
+        </button>
+    </main>
+</body>
+</html>
