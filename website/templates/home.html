@@ -1,52 +1,100 @@
-{% block content %}
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if role == 'admin' %}Administration{% else %}Contrôle de la porte{% endif %} | Serrure connectée</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="{% if role == 'admin' %}admin-page{% else %}client-page{% endif %}">
+    <main class="admin-shell">
+        <header class="admin-header">
+            <div>
+                <p class="eyebrow">Serrure connectée</p>
+                <h1>{% if role == 'admin' %}Administration{% else %}Contrôle de la porte{% endif %}</h1>
+            </div>
+            <div class="admin-account">
+                <span>Connecté : <strong>{{ name }}</strong></span>
+                <a href="{{ url_for('login') }}">Se déconnecter</a>
+            </div>
+        </header>
 
-<h1>Bienvenue, {{ name }}!</h1>
+        {% if role == 'admin' %}
+            <section class="admin-content" aria-labelledby="users-title">
+                <div class="section-heading">
+                    <div>
+                        <p class="eyebrow">Gestion des accès</p>
+                        <h2 id="users-title">Utilisateurs</h2>
+                    </div>
+                    <span class="user-count">{{ users|length }} compte{% if users|length != 1 %}s{% endif %}</span>
+                </div>
 
-{% if role == 'admin' %}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Identifiant</th>
+                                <th>Rôle</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td data-label="ID">{{ user[0] }}</td>
+                                <td data-label="Identifiant" class="user-name">{{ user[1] }}</td>
+                                <td data-label="Rôle"><span class="role-badge role-{{ user[3] }}">{{ user[3] }}</span></td>
+                                <td data-label="Actions" class="actions-cell">
+                                    <div class="action-links">
+                                        <a href="{{ url_for('edit_user', user_id=user[0]) }}">Modifier</a>
+                                        {% if user[0] != session['user_id'] %}
+                                            <a class="danger-link" href="{{ url_for('delete_user', user_id=user[0]) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Supprimer</a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-{# Liste des utilisateurs #}
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Identifiant</th>
-            <th>Rôle</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td>{{ user[0] }}</td>
-            <td>{{ user[1] }}</td>
-            <td>{{ user[3] }}</td>
-            <td>
-                <a href="{{ url_for('edit_user', user_id=user[0]) }}">Modifier</a>
-                {% if user[0] != session['user_id'] %}
-                    <a href="{{ url_for('delete_user', user_id=user[0]) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Supprimer</a>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-{# Ajout d'utilisateurs #}
-<form action="{{ url_for('add_user') }}" method="post">
-    <label for="name">Identifiant:</label>
-    <input type="text" id="name" name="name" required>
-    <label for="password">Mot de passe:</label>
-    <input type="password" id="password" name="password" required>
-    <label for="role">Rôle:</label>
-    <select id="role" name="role" required>
-        <option value="client">Client</option>
-        <option value="admin">Admin</option>
-    </select>
-    <button type="submit">Ajouter un utilisateur</button>
-</form>
-
-{% endif %}
-
-<a href="{{ url_for('login') }}">Se déconnecter</a>
-
-{% endblock %}
+                <section class="add-user-panel" aria-labelledby="add-user-title">
+                    <div>
+                        <p class="eyebrow">Nouveau compte</p>
+                        <h2 id="add-user-title">Ajouter un utilisateur</h2>
+                    </div>
+                    <form action="{{ url_for('add_user') }}" method="post">
+                        <label>
+                            <span>Identifiant</span>
+                            <input type="text" name="name" required>
+                        </label>
+                        <label>
+                            <span>Mot de passe</span>
+                            <input type="password" name="password" required>
+                        </label>
+                        <label>
+                            <span>Rôle</span>
+                            <select name="role" required>
+                                <option value="client">Client</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </label>
+                        <button type="submit">Ajouter</button>
+                    </form>
+                </section>
+            </section>
+        {% else %}
+            <section class="client-content" aria-labelledby="door-title">
+                <p class="eyebrow">Accès sécurisé</p>
+                <h2 id="door-title">Contrôle de la porte</h2>
+                <p class="door-description">Choisissez une action pour contrôler la serrure connectée.</p>
+                <div class="door-actions">
+                    <button type="button" class="door-button open-door">Ouvrir la porte</button>
+                    <button type="button" class="door-button close-door">Fermer la porte</button>
+                </div>
+            </section>
+        {% endif %}
+    </main>
+</body>
+</html>
