@@ -2,6 +2,8 @@
 
 <h1>Bienvenue, {{ name }}!</h1>
 
+{% if role == 'admin' %}
+
 {# Liste des utilisateurs #}
 <table>
     <thead>
@@ -42,6 +44,8 @@
     </select>
     <button type="submit">Ajouter un utilisateur</button>
 </form>
+
+{% endif %}
 
 <a href="{{ url_for('login') }}">Se déconnecter</a>
 
