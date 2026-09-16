@@ -47,6 +47,12 @@ class DatabaseManager:
         pwd_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
         conn = self.get_connexion()
         try:
+            existing_user = conn.execute(
+                'SELECT id FROM users WHERE name=?',
+                (name,)
+            ).fetchone()
+            if existing_user:
+                return False
             conn.execute(
                 'INSERT INTO users (name, password, role) VALUES (?,?,?)',
                 (name, pwd_hash, role)

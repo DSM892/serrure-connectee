@@ -242,6 +242,12 @@ body {
 	font-size: 20px;
 }
 
+.admin-error {
+	margin: 18px 0 0;
+	color: var(--error);
+	font-size: 12px;
+}
+
 .user-count {
 	color: var(--field-text);
 	font-size: 11px;
@@ -320,9 +326,10 @@ tbody tr:hover {
 
 .add-user-panel form {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr) auto;
+	grid-template-columns: repeat(3, minmax(130px, 1fr)) auto;
 	align-items: end;
 	gap: 12px;
+	min-width: 0;
 }
 
 .add-user-panel label {
@@ -525,7 +532,7 @@ tbody tr:hover {
 	background: #1d2c30;
 }
 
-@media (max-width: 520px) {
+@media (max-width: 800px) {
 	.login-page {
 		padding: 16px;
 	}
