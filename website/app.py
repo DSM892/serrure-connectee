@@ -51,7 +51,15 @@ def add_user():
         if success:
             return redirect(url_for('home'))
         else:
-            return render_template('home.html', error="Erreur lors de l'ajout de l'utilisateur"), 400
+            user = db.get_user_by_id(session['user_id'])
+            user_list = db.get_users_list()
+            return render_template(
+                'home.html',
+                name=user[1],
+                role=user[3],
+                users=user_list,
+                error="Cet identifiant existe déjà. Choisissez un autre identifiant."
+            ), 400
     return render_template('home.html')
 
 @app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])

@@ -63,6 +63,9 @@
                     <div>
                         <p class="eyebrow">Nouveau compte</p>
                         <h2 id="add-user-title">Ajouter un utilisateur</h2>
+                        {% if error %}
+                            <p class="admin-error" role="alert">{{ error }}</p>
+                        {% endif %}
                     </div>
                     <form action="{{ url_for('add_user') }}" method="post">
                         <label>
