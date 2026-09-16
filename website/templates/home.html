@@ -91,10 +91,19 @@
             <section class="client-content" aria-labelledby="door-title">
                 <p class="eyebrow">Accès sécurisé</p>
                 <h2 id="door-title">Contrôle de la porte</h2>
+                <divclass="door-status">
+                    <span class="status-label">État de la porte :</span>
+                    <span class="status-value {% if door_status == 'Ouverte' %}open{% else %}closed{% endif %}">{{ door_status }}</span>
+
+                </div>
                 <p class="door-description">Choisissez une action pour contrôler la serrure connectée.</p>
                 <div class="door-actions">
-                    <button type="button" class="door-button open-door">Ouvrir la porte</button>
-                    <button type="button" class="door-button close-door">Fermer la porte</button>
+                    <form action="{{ url_for('open_door') }}" method="post">
+                        <button type="submit" class="door-button open-door" name="action" value="open">Ouvrir la porte</button>
+                    </form>
+                    <form action="{{ url_for('close_door') }}" method="post">
+                        <button type="submit" class="door-button close-door" name="action" value="close">Fermer la porte</button>
+                    </form>
                 </div>
             </section>
         {% endif %}

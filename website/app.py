@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from database import DatabaseManager
 from functools import wraps
 from flask import abort
+from wifi_packet import Client
 
 def admin_required(f):
     @wraps(f)
@@ -14,9 +15,11 @@ def admin_required(f):
         return f(*args, **kwargs)
     return wrapper
 
+IP_ESP32="0.0.0.0"  # Remplacez par l'adresse IP de votre ESP32
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this to a random secret key
 db = DatabaseManager()
+esp32_client = Client(ip=IP_ESP32)
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -38,7 +41,12 @@ def home():
         return redirect(url_for('login'))
     user = db.get_user_by_id(session['user_id'])
     user_list = db.get_users_list() if user[3] == 'admin' else []
-    return render_template('home.html', name=user[1], role=user[3], users=user_list)
+    door_status_ = esp32_client._send_command(b"STATUS") if user[3] == 'client' else None
+    if door_status_ == b"OPEN":
+        door_status_str = "Ouverte"
+    elif door_status_ == b"CLOSED":
+        door_status_str = "Fermée"
+    return render_template('home.html', name=user[1], role=user[3], users=user_list, door_status=door_status_str)
 
 @app.route('/add_user', methods=['POST'])
 @admin_required
@@ -79,6 +87,24 @@ def edit_user(user_id):
 def delete_user(user_id):
     db.delete_user(user_id)
     return redirect(url_for('home'))
+
+@app.route('/open_door', methods=['POST'])
+def open_door():
+    action = request.form.get('action')
+    if action == 'open':
+        esp32_client._send_command(b"OPEN")
+        return redirect(url_for('home'))
+    else:
+        return "Invalid action", 400
+
+@app.route('/close_door', methods=['POST'])
+def close_door():
+    action = request.form.get('action')
+    if action == 'close':
+        esp32_client._send_command(b"CLOSE")
+        return redirect(url_for('home'))
+    else:
+        return "Invalid action", 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
