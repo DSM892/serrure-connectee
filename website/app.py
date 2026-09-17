@@ -15,7 +15,7 @@ def admin_required(f):
         return f(*args, **kwargs)
     return wrapper
 
-IP_ESP32="0.0.0.0"  # Remplacez par l'adresse IP de votre ESP32
+IP_ESP32="10.5.100.13"  # Remplacez par l'adresse IP de votre ESP32
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Change this to a random secret key
 db = DatabaseManager()
@@ -41,11 +41,17 @@ def home():
         return redirect(url_for('login'))
     user = db.get_user_by_id(session['user_id'])
     user_list = db.get_users_list() if user[3] == 'admin' else []
-    door_status_ = esp32_client._send_command(b"STATUS") if user[3] == 'client' else None
-    if door_status_ == b"OPEN":
-        door_status_str = "Ouverte"
-    elif door_status_ == b"CLOSED":
-        door_status_str = "Fermée"
+    if user[3] == 'client':
+        door_status_ = esp32_client._send_command(b"STATUS")
+        print("door_status_:", door_status_)
+        if door_status_ == b"OPEN":
+            door_status_str = "Ouverte"
+        elif door_status_ == b"CLOSED":
+            door_status_str = "Fermée"
+        else:
+            door_status_str = "Inconnue"
+    else:
+        door_status_str = "Inconnue"
     return render_template('home.html', name=user[1], role=user[3], users=user_list, door_status=door_status_str)
 
 @app.route('/add_user', methods=['POST'])
