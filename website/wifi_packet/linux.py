@@ -24,7 +24,7 @@ class Client:
         self,
         ip,
         port=5000,
-        timeout=5
+        timeout=3
     ):
         self.ip = ip
         self.port = port
